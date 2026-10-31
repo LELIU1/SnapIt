@@ -13,8 +13,5 @@
     <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="tests\**\*.cs" />
-  </ItemGroup>
 
 </Project>
