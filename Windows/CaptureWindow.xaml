@@ -1,0 +1,240 @@
+<Window x:Class="SnapIt.Windows.CaptureWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SnapIt" WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent" Topmost="True" ShowInTaskbar="False"
+        ResizeMode="NoResize" Focusable="True" WindowStartupLocation="Manual"
+        Loaded="Window_Loaded"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        MouseMove="Window_MouseMove"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp">
+
+    <Window.Resources>
+        <Style x:Key="ToolToggle" TargetType="{x:Type RadioButton}">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F2F3F5"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#DFF4E7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ToolButton" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F2F3F5"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SwatchStyle" TargetType="{x:Type ToggleButton}">
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Margin" Value="1,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                CornerRadius="4" BorderBrush="#D9DEE7" BorderThickness="1"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#07C160"/>
+                                <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Canvas x:Name="Root" Background="Transparent">
+
+        <Image x:Name="BaseImage" Stretch="Fill" Canvas.Left="0" Canvas.Top="0"/>
+
+        <Canvas x:Name="DimLayer">
+            <Rectangle x:Name="DimTop" Fill="#551F2329"/>
+            <Rectangle x:Name="DimBottom" Fill="#551F2329"/>
+            <Rectangle x:Name="DimLeft" Fill="#551F2329"/>
+            <Rectangle x:Name="DimRight" Fill="#551F2329"/>
+        </Canvas>
+
+        <Border x:Name="WindowHoverBorder" Visibility="Collapsed"
+                BorderBrush="#8C07C160" BorderThickness="2" Background="#1407C160" CornerRadius="2"/>
+
+        <Canvas x:Name="ShapeLayer" Visibility="Collapsed">
+            <Canvas x:Name="ShapeCanvas"/>
+        </Canvas>
+
+        <Canvas x:Name="SelectionLayer">
+            <Border x:Name="SelectionBorder" BorderBrush="#07C160" BorderThickness="1.5" Visibility="Collapsed"/>
+            <Canvas x:Name="HandlesCanvas" Visibility="Collapsed"/>
+            <Border x:Name="SizeBadge" Background="#E61F2329" CornerRadius="9" Padding="9,2"
+                    Visibility="Collapsed" IsHitTestVisible="False">
+                <TextBlock x:Name="SizeText" Foreground="White" FontSize="11" FontFamily="Consolas"/>
+            </Border>
+        </Canvas>
+
+        <Border x:Name="Magnifier" Visibility="Collapsed" Width="64" Height="64"
+                BorderBrush="White" BorderThickness="2" CornerRadius="32" IsHitTestVisible="False">
+            <Border CornerRadius="30" ClipToBounds="True">
+                <Image x:Name="MagnifierImage" Stretch="Fill" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+            </Border>
+        </Border>
+
+        <Border x:Name="MagnifierText" Visibility="Collapsed" Background="#C81F2329"
+                CornerRadius="3" Padding="5,2" IsHitTestVisible="False">
+            <TextBlock x:Name="RgbText" Foreground="White" FontSize="11" FontFamily="Consolas"/>
+        </Border>
+
+        <Border x:Name="PropertyPanel" Background="White" CornerRadius="10"
+                BorderBrush="#C9D2DE" BorderThickness="1" Padding="10,8" Visibility="Collapsed">
+            <ScrollViewer x:Name="PropertyPanelScroll" HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel x:Name="SwatchPanel" Orientation="Horizontal" VerticalAlignment="Center"/>
+                <Rectangle Width="1" Height="18" Fill="#E5E9EF" Margin="9,0"/>
+                <StackPanel x:Name="ThicknessPanel" Orientation="Horizontal" VerticalAlignment="Center">
+                    <RadioButton x:Name="ThinBtn" GroupName="thickness" Style="{StaticResource ToolToggle}"
+                                 Click="Thickness_Click" ToolTip="细线条" Tag="0">
+                        <Ellipse Width="4" Height="4" Fill="#3E4147"/>
+                    </RadioButton>
+                    <RadioButton x:Name="MidBtn" GroupName="thickness" Style="{StaticResource ToolToggle}"
+                                 Click="Thickness_Click" ToolTip="中线条" Tag="1">
+                        <Ellipse Width="6" Height="6" Fill="#3E4147"/>
+                    </RadioButton>
+                    <RadioButton x:Name="ThickBtn" GroupName="thickness" Style="{StaticResource ToolToggle}"
+                                 Click="Thickness_Click" ToolTip="粗线条" Tag="2">
+                        <Ellipse Width="9" Height="9" Fill="#3E4147"/>
+                    </RadioButton>
+                </StackPanel>
+                <Rectangle x:Name="ThicknessDivider" Width="1" Height="18" Fill="#E5E9EF" Margin="9,0"/>
+                <StackPanel x:Name="TextPanel" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ComboBox x:Name="FontBox" Width="110" SelectionChanged="FontBox_Changed"/>
+                    <Button x:Name="FontMinus" Style="{StaticResource ToolButton}" Click="FontMinus_Click" ToolTip="减小字号">
+                        <TextBlock Text="A-" FontSize="11" Foreground="#3E4147"/>
+                    </Button>
+                    <TextBox x:Name="SizeBox" Width="42" Text="16" TextChanged="SizeBox_Changed"
+                             LostKeyboardFocus="SizeBox_LostKeyboardFocus"
+                             PreviewKeyDown="SizeBox_PreviewKeyDown"
+                             VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="0,3"
+                             ToolTip="字号（8–72）"/>
+                    <Button x:Name="FontPlus" Style="{StaticResource ToolButton}" Click="FontPlus_Click" ToolTip="增大字号">
+                        <TextBlock Text="A+" FontSize="11" Foreground="#3E4147"/>
+                    </Button>
+                    <ToggleButton x:Name="BoldBtn" Width="28" Height="28" Click="TextFormat_Click"
+                                  Content="B" FontWeight="Bold" FontSize="13" ToolTip="粗体"/>
+                    <ToggleButton x:Name="ItalicBtn" Width="28" Height="28" Click="TextFormat_Click"
+                                  Content="I" FontStyle="Italic" FontSize="13" ToolTip="斜体"/>
+                    <ToggleButton x:Name="UnderlineBtn" Width="28" Height="28" Click="TextFormat_Click"
+                                  Content="U" FontSize="13" ToolTip="下划线"/>
+                </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <Border x:Name="ToolBar" Background="White" CornerRadius="10"
+                BorderBrush="#C9D2DE" BorderThickness="1" Padding="8,6" Visibility="Collapsed">
+            <ScrollViewer x:Name="ToolBarScroll" HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Rect" ToolTip="矩形">
+                    <Rectangle Width="11" Height="10" Stroke="#3E4147" StrokeThickness="1.4" Fill="Transparent"/>
+                </RadioButton>
+                <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Ellipse" ToolTip="椭圆">
+                    <Ellipse Width="12" Height="9" Stroke="#3E4147" StrokeThickness="1.4" Fill="Transparent"/>
+                </RadioButton>
+                <RadioButton x:Name="LineToolBtn" GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Line" ToolTip="直线（拖动绘制；按住 Shift 水平约束）" AutomationProperties.Name="直线工具">
+                    <Path Data="M1,10 L10,1" Stroke="#3E4147" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                </RadioButton>
+                <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Arrow" ToolTip="箭头（按住左键拖动）">
+                    <Path Data="M0,9 L9,0 M4,0 L9,0 L9,5" Stroke="#3E4147" StrokeThickness="1.4"
+                         StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                </RadioButton>
+                <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Pen" ToolTip="画笔（按住左键自由绘制）" AutomationProperties.Name="自由画笔工具">
+                    <Path Data="M0,9 L7,2 M7,2 L9,0" Stroke="#3E4147" StrokeThickness="1.8"
+                         StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                </RadioButton>
+                <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Highlighter" ToolTip="荧光笔">
+                    <Path Data="M0,8 L6,2" Stroke="#3E4147" StrokeThickness="3.6"
+                         StrokeStartLineCap="Round" StrokeEndLineCap="Round" Opacity="0.8"/>
+                </RadioButton>
+                <RadioButton GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Mosaic" ToolTip="马赛克">
+                    <Path Data="M0,0h3.2v3.2h-3.2z M4.2,0h3.2v3.2h-3.2z M8.4,0h3.2v3.2h-3.2z M0,4.2h3.2v3.2h-3.2z M4.2,4.2h3.2v3.2h-3.2z M8.4,4.2h3.2v3.2h-3.2z M0,8.4h3.2v3.2h-3.2z M4.2,8.4h3.2v3.2h-3.2z M8.4,8.4h3.2v3.2h-3.2z" Fill="#3E4147"/>
+                </RadioButton>
+                <RadioButton x:Name="TextToolBtn" GroupName="tool" Style="{StaticResource ToolToggle}" Click="ToolBtn_Click" Tag="Text" ToolTip="文字">
+                    <TextBlock Text="T" FontSize="14" FontWeight="Bold" Foreground="#3E4147"/>
+                </RadioButton>
+                <Rectangle Width="1" Height="16" Fill="#E5E9EF" Margin="4,0"/>
+                <Button x:Name="UndoBtn" Style="{StaticResource ToolButton}" Click="UndoBtn_Click" ToolTip="撤销 (Ctrl+Z)" IsEnabled="False">
+                    <Path Data="M9.5,10.5 C9.5,5 3.5,5 2,9 M2,9 L0.3,7 M2,9 L0.3,11" Stroke="#3E4147" StrokeThickness="1.4"
+                         StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                </Button>
+                <Button x:Name="RedoBtn" Style="{StaticResource ToolButton}" Click="RedoBtn_Click" ToolTip="重做 (Ctrl+Y)" IsEnabled="False">
+                    <Path Data="M1.5,10.5 C1.5,5 7.5,5 9,9 M9,9 L10.7,7 M9,9 L10.7,11" Stroke="#3E4147" StrokeThickness="1.4"
+                         StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                </Button>
+                <Rectangle Width="1" Height="16" Fill="#E5E9EF" Margin="4,0"/>
+                <Button x:Name="PinBtn" Style="{StaticResource ToolButton}" Click="PinBtn_Click" ToolTip="贴到屏幕">
+                    <Path Data="M5.5,1 C2.5,1 1.5,4 3.5,6.5 L5.5,10.5 L7.5,6.5 C9.5,4 8.5,1 5.5,1 Z" Fill="#3E4147"/>
+                </Button>
+                <Button x:Name="SaveBtn" Style="{StaticResource ToolButton}" Click="SaveBtn_Click" ToolTip="保存 (Ctrl+S)">
+                    <Path Data="M1.5,1.5 H9.5 V10.5 H1.5 Z M3.5,1.5 V4 H7 V1.5 M3.5,10.5 V7 H6.5 V10.5" Stroke="#3E4147"
+                         StrokeThickness="1.2" Fill="{x:Null}" StrokeLineJoin="Round"/>
+                </Button>
+                <Button x:Name="CopyBtn" Style="{StaticResource ToolButton}" Click="CopyBtn_Click" ToolTip="复制到剪贴板 (Ctrl+C)">
+                    <Canvas Width="12" Height="12">
+                        <Rectangle Canvas.Left="1" Canvas.Top="1" Width="7" Height="8.5" Stroke="#3E4147" StrokeThickness="1.2" Fill="White"/>
+                        <Rectangle Canvas.Left="4" Canvas.Top="4" Width="7" Height="8.5" Stroke="#3E4147" StrokeThickness="1.2" Fill="White"/>
+                    </Canvas>
+                </Button>
+                <Button x:Name="NewCaptureBtn" Width="42" Style="{StaticResource ToolButton}" Click="NewCaptureBtn_Click"
+                        ToolTip="重新截图 (使用当前截图快捷键)" AutomationProperties.Name="重新截图">
+                    <TextBlock Text="重截" FontSize="11" Foreground="#3E4147"/>
+                </Button>
+                <Button x:Name="CloseBtn" Style="{StaticResource ToolButton}" Click="CloseBtn_Click" ToolTip="取消截图 (Esc)" AutomationProperties.Name="取消截图">
+                    <Path Data="M1,1 L9,9 M9,1 L1,9" Stroke="#4B535E" StrokeThickness="1.6"
+                         StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                </Button>
+                <Rectangle Width="1" Height="16" Fill="#E5E9EF" Margin="4,0"/>
+                <Button x:Name="HelpBtn" Width="46" Style="{StaticResource ToolButton}" Click="HelpBtn_Click" ToolTip="帮助与快捷键">
+                    <TextBlock Text="帮助" FontSize="11" FontWeight="SemiBold" Foreground="#3E4147"/>
+                </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+    </Canvas>
+</Window>

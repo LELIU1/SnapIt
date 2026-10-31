@@ -1,0 +1,56 @@
+<Window x:Class="SnapIt.Windows.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SnapIt 帮助与快捷键" Width="520" Height="600"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResizeWithGrip"
+        Background="#F4F6F8" FontFamily="Microsoft YaHei UI">
+    <Grid Margin="22">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="0,0,0,14">
+            <TextBlock Text="帮助与快捷键" FontSize="22" FontWeight="SemiBold" Foreground="#1F2329"/>
+            <TextBlock x:Name="GlobalHotkeyText" Margin="0,6,0,0" FontSize="13" Foreground="#079B4E"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Background="White" BorderBrush="#E4E8ED" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="截图与编辑" FontSize="15" FontWeight="SemiBold" Foreground="#1F2329" Margin="0,0,0,8"/>
+                        <TextBlock x:Name="DrawingHelpText" Text="• 程序启动后，桌面角落会显示 SnapIt 小图标；单击图标即可截图，拖动右侧握柄可移动，右键可打开帮助或隐藏图标。&#10;• 按当前截图快捷键也可启动截图；托盘菜单和托盘双击仍可作为备用入口。截图期间桌面提示图标会自动隐藏，退出编辑后恢复。&#10;• 截图编辑工具栏是主要操作界面：先选择工具，再在选区内按住鼠标左键拖动绘制。直线（按住 Shift 水平绘制）、箭头、矩形、椭圆、画笔、高亮和马赛克均支持拖动绘制。&#10;• 鼠标拖动可框选区域；点击窗口可吸附窗口范围；拖动选区的白色控制点可调整大小。&#10;• 点击“文字”后在选区内点击输入；属性栏可修改字体、字号、颜色及样式。双击已有文字可再次编辑；复制请点击复制按钮或按 Ctrl+C。"
+                                   TextWrapping="Wrap" FontSize="12" LineHeight="21" Foreground="#4B535E"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" BorderBrush="#E4E8ED" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="编辑快捷键" FontSize="15" FontWeight="SemiBold" Foreground="#1F2329" Margin="0,0,0,8"/>
+                        <TextBlock x:Name="EditorShortcutsText" Text="Ctrl+Z：撤销    Ctrl+Y 或 Ctrl+Shift+Z：重做&#10;Ctrl+C：复制截图    Ctrl+S：保存截图&#10;Delete：删除当前选中的标注&#10;Enter：文字编辑时提交；其他时候复制并退出&#10;Esc：取消文字输入/退出截图；贴图窗口中关闭贴图"
+                                   TextWrapping="Wrap" FontSize="12" LineHeight="22" Foreground="#4B535E"/>
+                        <TextBlock x:Name="HotkeyFallbackHelp" Margin="0,8,0,0"
+                                   Text="若快捷键无法使用，可双击系统托盘图标或右键菜单中的“截图”启动。SnapIt 不会占用 PrintScreen 键。"
+                                   TextWrapping="Wrap" FontSize="11" Foreground="#747C86"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" BorderBrush="#E4E8ED" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="复制、保存与贴图" FontSize="15" FontWeight="SemiBold" Foreground="#1F2329" Margin="0,0,0,8"/>
+                        <TextBlock Text="工具栏中的复制和保存按钮会输出当前选区及全部已提交标注。点击图钉可置顶贴图；拖动贴图可移动，滚轮缩放。鼠标移到贴图上可看到“取消置顶”按钮；也可双击贴图或按 Esc 关闭。"
+                                   TextWrapping="Wrap" FontSize="12" LineHeight="21" Foreground="#4B535E"/>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="当前版本截图范围为主显示器；多显示器支持将在后续版本扩展。"
+                           Margin="2,2,2,12" TextWrapping="Wrap" FontSize="11" Foreground="#9098A3"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="2" Content="关闭" Width="90" Height="34" Margin="0,12,0,0"
+                HorizontalAlignment="Right" IsDefault="True" Click="Close_Click"
+                Background="#07C160" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+    </Grid>
+</Window>

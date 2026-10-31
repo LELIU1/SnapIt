@@ -1,0 +1,42 @@
+<Window x:Class="SnapIt.Windows.LauncherWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SnapIt 快截" Width="440" Height="350"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Background="#F4F6F8" FontFamily="Microsoft YaHei UI"
+        Closing="LauncherWindow_Closing">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="SnapIt" FontSize="26" FontWeight="SemiBold" Foreground="#1F2329"/>
+            <TextBlock Text="轻快截图 · 标注 · 分享" Margin="0,4,0,0" FontSize="13" Foreground="#747C86"/>
+        </StackPanel>
+
+        <Border Grid.Row="1" Margin="0,20,0,16" Padding="20" Background="White"
+                BorderBrush="#E4E8ED" BorderThickness="1" CornerRadius="14">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="随时开始一张截图" FontSize="18" FontWeight="SemiBold" Foreground="#1F2329"/>
+                <TextBlock Text="框选区域或窗口，添加直线、箭头、文字与马赛克，然后复制或保存。"
+                           Margin="0,8,0,18" TextWrapping="Wrap" FontSize="12" LineHeight="20" Foreground="#747C86"/>
+                <Button x:Name="StartCaptureButton" Height="48" Click="StartCapture_Click" Background="#07C160" Foreground="White"
+                        BorderThickness="0" FontSize="15" FontWeight="SemiBold" Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="开始截图"/>
+                        <TextBlock x:Name="ShortcutText" Margin="12,0,0,0" FontSize="12" FontWeight="Normal"/>
+                    </StackPanel>
+                </Button>
+                <Button Content="帮助与快捷键" Width="120" Height="32" Margin="0,12,0,0"
+                        HorizontalAlignment="Center" Click="Help_Click"
+                        Background="Transparent" Foreground="#4B535E" BorderBrush="Transparent" Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="2" Text="关闭此窗口会保留程序在系统托盘运行。双击托盘图标可再次打开。"
+                   FontSize="11" Foreground="#9098A3" TextWrapping="Wrap"/>
+    </Grid>
+</Window>

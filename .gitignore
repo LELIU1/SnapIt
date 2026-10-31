@@ -1,0 +1,19 @@
+# Build output
+**/bin/
+**/obj/
+.vs/
+TestResults/
+
+# Workspace-local toolchain and published binaries
+/.dotnet-sdk/
+/SnapIt-*-win-x64/
+*.exe
+*.dll
+*.pdb
+*.cache
+
+# User/workspace-specific data
+/.workbuddy-ai/
+*.user
+*.suo
+*.log
