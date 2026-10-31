@@ -15,7 +15,9 @@ SnapIt 是一款面向 Windows 的轻量截图与标注工具。启动后驻留�
 
 ## 方式一：下载 EXE 直接使用
 
-从项目的 GitHub **Releases** 下载 `SnapIt.exe`，双击启动即可。发布的 Windows x64 单文件版本为 self-contained，不要求另外安装 .NET Runtime。
+从 [最新 GitHub Release](https://github.com/LELIU1/SnapIt/releases/latest) 下载 `SnapIt.exe`，双击启动即可。Windows x64 单文件版为 self-contained，不要求另外安装 .NET Runtime。
+
+GitHub Release 是网页上的版本发布页，不是源码里的 `release` 文件夹。本项目已配置 GitHub Actions：向仓库推送形如 `v0.1.0` 的版本标签后，会自动构建单文件 EXE 并将其附加到对应 Release。源码仓库中可查看 `.github/workflows/release.yml`。
 
 启动后，桌面角落会出现 SnapIt 小图标：
 

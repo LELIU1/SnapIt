@@ -1,0 +1,39 @@
+name: Build and publish Windows release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish self-contained Windows x64 executable
+        run: >-
+          dotnet publish src/SnapIt/SnapIt.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true
+          --output artifacts/publish/win-x64
+
+      - name: Create GitHub Release and attach executable
+        uses: softprops/action-gh-release@v2
+        with:
+          name: SnapIt ${{ github.ref_name }}
+          generate_release_notes: true
+          files: artifacts/publish/win-x64/SnapIt.exe
